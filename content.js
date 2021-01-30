@@ -26,7 +26,7 @@ $("body").keyup(function () {
   if (element) {
     $(element).css("background-color", element_background_color);
     $(element).css("border", "");
-  }s
+  }
 });
 //delete and save element when ctrl+alt+click
 $("body").click(function (event) {
