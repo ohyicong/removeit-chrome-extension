@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="width: 250px; border-radius: 20px">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -12,14 +12,22 @@
       href="bootstrap.min.css"
     />
   </head>
-  <body>
-    <div class="alert alert-primary" role="alert">
-      A simple primary alert with
-      <a href="#" class="alert-link">an example link</a>. Give it a click if you
-      like.
+  <body class="p-2" style="width: 250px; border-radius: 20px">
+    <div class="alert alert-primary mb-1" role="alert">
+      <h5 class="mb-0 text-center"><small>Total objects removed:</small></h5>
+      <hr class="" />
+      <h5
+        class="mb-0 text-center font-weight-bold"
+        id="numberRemovedElements"
+      ></h5>
     </div>
-    <p id="text"></p>
-    <input type="text" id="user_input" />
+    <button
+      class="btn btn-outline-secondary btn-block"
+      type="button"
+      id="undoButton"
+    >
+      Undo
+    </button>
   </body>
   <script src="jquery-3.5.1.min.js"></script>
   <script src="popup.js"></script>
