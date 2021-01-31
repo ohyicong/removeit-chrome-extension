@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "removeit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Remove html elements from your browser.",
   "browser_action": {
     "default_popup": "popup.html"

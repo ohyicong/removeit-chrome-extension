@@ -27,8 +27,6 @@ chrome.tabs.query(query, (tabs) => {
           if (removedElements) {
             $("#numberRemovedElements").text(`${numberOfRemovedElement}`);
           }
-        } else {
-          $("#numberRemovedElements").text("0");
         }
       }
     } else {
