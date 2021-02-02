@@ -1,4 +1,4 @@
-var tabUrl = "";
+var currentWebsite = "";
 var websites = "";
 var query = { active: true, currentWindow: true };
 
@@ -18,8 +18,9 @@ chrome.webNavigation.onCommitted.addListener(() => {
 chrome.storage.onChanged.addListener((result, storageName) => {
   chrome.tabs.query(query, (tabs) => {
     var isWebsiteFound = false;
-    tabUrl = tabs[0].url;
-    console.log("active web: ", tabs[0].url);
+    currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+    console.log("active web: ", currentWebsite);
+    console.log("active web: ", currentWebsite);
     //alert(tabs[0].url);
     console.log("event.js", result.websites.newValue);
     websites = result.websites.newValue;
@@ -27,7 +28,7 @@ chrome.storage.onChanged.addListener((result, storageName) => {
       for (var websiteKey in websites) {
         console.log(websites[websiteKey]["website"]);
         //check if website records exists
-        if (websites[websiteKey]["website"] == tabUrl) {
+        if (websites[websiteKey]["website"] == currentWebsite) {
           isWebsiteFound = true;
           removedElements = websites[websiteKey]["removedElements"];
           numberOfRemovedElement = removedElements.length;
@@ -56,8 +57,8 @@ chrome.storage.onChanged.addListener((result, storageName) => {
 function loadBadgeNotification() {
   chrome.tabs.query(query, (tabs) => {
     var isWebsiteFound = false;
-    tabUrl = tabs[0].url;
-    console.log("active web: ", tabs[0].url);
+    currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+    console.log("active web: ", currentWebsite);
     chrome.storage.local.get("websites", function (result) {
       console.log("event.js", result.websites);
       websites = result.websites;
@@ -65,7 +66,7 @@ function loadBadgeNotification() {
         for (var websiteKey in websites) {
           console.log(websites[websiteKey]["website"]);
           //check if website records exists
-          if (websites[websiteKey]["website"] == tabUrl) {
+          if (websites[websiteKey]["website"] == currentWebsite) {
             isWebsiteFound = true;
             console.log("record exists");
             removedElements = websites[websiteKey]["removedElements"];
@@ -88,4 +89,7 @@ function loadBadgeNotification() {
       }
     });
   });
+}
+function extractWebsiteFromLink(link) {
+  return link.split("/")[2];
 }

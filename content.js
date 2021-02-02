@@ -84,8 +84,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function setRemovedElementsToStorage() {
   //global variable websites,removedElements
   var isWebsiteFound = false;
+  var currentWebsite = extractWebsiteFromLink(window.location.href);
+  console.log("content.js", currentWebsite);
   for (var websiteKey in websites) {
-    if (websites[websiteKey]["website"] == window.location.href) {
+    if (websites[websiteKey]["website"] == currentWebsite) {
       websites[websiteKey]["removedElements"] = removedElements;
       isWebsiteFound = true;
     }
@@ -98,14 +100,14 @@ function setRemovedElementsToStorage() {
       //initialisation
       websites = [
         {
-          website: window.location.href,
+          website: currentWebsite,
           removedElements: removedElements,
         },
       ];
     } else {
       //subsequent entries
       websites.push({
-        website: window.location.href,
+        website: currentWebsite,
         removedElements: removedElements,
       });
     }
@@ -136,12 +138,14 @@ function loadWebsite() {
   //check chrome storage
   chrome.storage.local.get("websites", function (result) {
     websites = result.websites;
+    var currentWebsite = extractWebsiteFromLink(window.location.href);
+    console.log("content.js", currentWebsite);
     if (websites) {
       console.log(websites);
       for (var websiteKey in websites) {
         console.log(websites[websiteKey]["website"]);
         //check if website records exists
-        if (websites[websiteKey]["website"] == window.location.href) {
+        if (websites[websiteKey]["website"] == currentWebsite) {
           removedElements = websites[websiteKey]["removedElements"];
           //remove elements
           if (removedElements) {
@@ -156,4 +160,8 @@ function loadWebsite() {
       console.log(websites);
     }
   });
+}
+
+function extractWebsiteFromLink(link) {
+  return link.split("/")[2];
 }

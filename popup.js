@@ -11,7 +11,8 @@ $("#undoButton").click(() => {
   }
 });
 chrome.tabs.query(query, (tabs) => {
-  console.log("active web: ", tabs[0].url);
+  var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+  console.log("active web: ", currentWebsite);
   //check chrome storage
   chrome.storage.local.get("websites", function (result) {
     var isWebsiteFound = false;
@@ -21,7 +22,7 @@ chrome.tabs.query(query, (tabs) => {
       for (var websiteKey in websites) {
         console.log(websites[websiteKey]["website"]);
         //check if website records exists
-        if (websites[websiteKey]["website"] == tabs[0].url) {
+        if (websites[websiteKey]["website"] == currentWebsite) {
           isWebsiteFound = true;
           removedElements = websites[websiteKey]["removedElements"];
           numberOfRemovedElement = removedElements.length;
@@ -37,3 +38,6 @@ chrome.tabs.query(query, (tabs) => {
     }
   });
 });
+function extractWebsiteFromLink(link) {
+  return link.split("/")[2];
+}
