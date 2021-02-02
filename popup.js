@@ -20,9 +20,9 @@ chrome.tabs.query(query, (tabs) => {
       console.log(websites);
       for (var websiteKey in websites) {
         console.log(websites[websiteKey]["website"]);
-        isWebsiteFound = true;
         //check if website records exists
         if (websites[websiteKey]["website"] == tabs[0].url) {
+          isWebsiteFound = true;
           removedElements = websites[websiteKey]["removedElements"];
           numberOfRemovedElement = removedElements.length;
           //remove elements
