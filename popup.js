@@ -1,7 +1,9 @@
 var numberOfRemovedElement = 0;
 var query = { active: true, currentWindow: true };
+
+//function to undo last removed item
 $("#undoButton").click(() => {
-  console.log("popup.js clicked");
+  console.log("[+] popup.js undo clicked");
   $("#undoButton").blur();
   if (numberOfRemovedElement > 0) {
     chrome.tabs.query(query, (tabs) => {
@@ -10,17 +12,23 @@ $("#undoButton").click(() => {
     });
   }
 });
+
+//function to load information on popup.html
 chrome.tabs.query(query, (tabs) => {
   var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
-  console.log("active web: ", currentWebsite);
+  console.log("[+] popup.js website selected", currentWebsite);
+  $("#currentWebsite").text(currentWebsite.toLowerCase());
+  if (currentWebsite == "") {
+    console.log("[-] popup.js no website available");
+    return;
+  }
   //check chrome storage
   chrome.storage.local.get("websites", function (result) {
+    //global variable: websites
     var isWebsiteFound = false;
     websites = result.websites;
     if (websites) {
-      console.log(websites);
       for (var websiteKey in websites) {
-        console.log(websites[websiteKey]["website"]);
         //check if website records exists
         if (websites[websiteKey]["website"] == currentWebsite) {
           isWebsiteFound = true;
@@ -39,5 +47,10 @@ chrome.tabs.query(query, (tabs) => {
   });
 });
 function extractWebsiteFromLink(link) {
-  return link.split("/")[2];
+  try {
+    return link.split("/")[2];
+  } catch (e) {
+    console.log("[-] popup.js Exception occured: ", e);
+    return "";
+  }
 }

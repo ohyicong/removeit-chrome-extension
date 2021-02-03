@@ -19,14 +19,14 @@ chrome.storage.onChanged.addListener((result, storageName) => {
   chrome.tabs.query(query, (tabs) => {
     var isWebsiteFound = false;
     currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
-    console.log("active web: ", currentWebsite);
-    console.log("active web: ", currentWebsite);
-    //alert(tabs[0].url);
-    console.log("event.js", result.websites.newValue);
+    console.log("[+] event.js website selected", currentWebsite);
+    if (currentWebsite == "") {
+      console.log("[-] event.js no website available");
+      return;
+    }
     websites = result.websites.newValue;
     if (websites) {
       for (var websiteKey in websites) {
-        console.log(websites[websiteKey]["website"]);
         //check if website records exists
         if (websites[websiteKey]["website"] == currentWebsite) {
           isWebsiteFound = true;
@@ -46,7 +46,7 @@ chrome.storage.onChanged.addListener((result, storageName) => {
       }
     }
     if (!isWebsiteFound) {
-      console.log("record not exists 2");
+      console.log("[-] event.js no website available");
       chrome.browserAction.setBadgeText({
         text: `0`,
       });
@@ -58,22 +58,18 @@ function loadBadgeNotification() {
   chrome.tabs.query(query, (tabs) => {
     var isWebsiteFound = false;
     currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
-    console.log("active web: ", currentWebsite);
+    console.log("[+] event.js website selected", currentWebsite);
     chrome.storage.local.get("websites", function (result) {
-      console.log("event.js", result.websites);
       websites = result.websites;
       if (websites) {
         for (var websiteKey in websites) {
-          console.log(websites[websiteKey]["website"]);
           //check if website records exists
           if (websites[websiteKey]["website"] == currentWebsite) {
             isWebsiteFound = true;
-            console.log("record exists");
             removedElements = websites[websiteKey]["removedElements"];
             numberOfRemovedElement = removedElements.length;
             //remove elements
             if (removedElements) {
-              console.log("event.js removed elements:", numberOfRemovedElement);
               chrome.browserAction.setBadgeText({
                 text: `${numberOfRemovedElement}`,
               });
@@ -82,7 +78,6 @@ function loadBadgeNotification() {
         }
       }
       if (!isWebsiteFound) {
-        console.log("record not exists 2");
         chrome.browserAction.setBadgeText({
           text: `0`,
         });
@@ -91,5 +86,10 @@ function loadBadgeNotification() {
   });
 }
 function extractWebsiteFromLink(link) {
-  return link.split("/")[2];
+  try {
+    return link.split("/")[2];
+  } catch (e) {
+    console.log("[-] event.js exception occured: ", e);
+    return "";
+  }
 }

@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
   "name": "removeit",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Remove html elements from your browser.",
+  "icons": { "128": "remove_it_logo.png" },
   "browser_action": {
     "default_popup": "popup.html"
   },

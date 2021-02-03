@@ -73,7 +73,7 @@ function structureSelector(element) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action == "undo") {
-    console.log("content.js undo");
+    console.log("content.js undo clicked");
     //undo removed element
     undoElement();
     //save removed elements to storage
@@ -82,10 +82,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function setRemovedElementsToStorage() {
-  //global variable websites,removedElements
+  //global variable: websites,removedElements
   var isWebsiteFound = false;
   var currentWebsite = extractWebsiteFromLink(window.location.href);
-  console.log("content.js", currentWebsite);
+  console.log("[+] content.js website selected", currentWebsite);
+  if (currentWebsite == "") {
+    console.log("[-] content.js no website available");
+    return;
+  }
   for (var websiteKey in websites) {
     if (websites[websiteKey]["website"] == currentWebsite) {
       websites[websiteKey]["removedElements"] = removedElements;
@@ -95,7 +99,6 @@ function setRemovedElementsToStorage() {
   //if website not found, create new entry
   if (!isWebsiteFound) {
     //check number of saved websites
-    console.log("websites", websites);
     if (websites.length == 0) {
       //initialisation
       websites = [
@@ -139,7 +142,11 @@ function loadWebsite() {
   chrome.storage.local.get("websites", function (result) {
     websites = result.websites;
     var currentWebsite = extractWebsiteFromLink(window.location.href);
-    console.log("content.js", currentWebsite);
+    console.log("[+] content.js website selected", currentWebsite);
+    if (currentWebsite == "") {
+      console.log("[-] content.js no website available");
+      return;
+    }
     if (websites) {
       console.log(websites);
       for (var websiteKey in websites) {
@@ -163,5 +170,10 @@ function loadWebsite() {
 }
 
 function extractWebsiteFromLink(link) {
-  return link.split("/")[2];
+  try {
+    return link.split("/")[2];
+  } catch (e) {
+    console.log("[-] content.js exception occured: ", e);
+    return "";
+  }
 }
