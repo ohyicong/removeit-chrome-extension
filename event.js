@@ -1,7 +1,3 @@
-var currentWebsite = "";
-var websites = "";
-var query = { active: true, currentWindow: true };
-
 //check if new tab is selected, update badge number
 chrome.tabs.onSelectionChanged.addListener(() => {
   loadBadgeNotification();
@@ -16,15 +12,15 @@ chrome.webNavigation.onCommitted.addListener(() => {
 });
 //listen to any change in storage, update badge number
 chrome.storage.onChanged.addListener((result, storageName) => {
-  chrome.tabs.query(query, (tabs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     var isWebsiteFound = false;
-    currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+    var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
     console.log("[+] event.js website selected", currentWebsite);
     if (currentWebsite == "") {
       console.log("[-] event.js no website available");
       return;
     }
-    websites = result.websites.newValue;
+    var websites = result.websites.newValue;
     if (websites) {
       for (var websiteKey in websites) {
         //check if website records exists
@@ -55,12 +51,12 @@ chrome.storage.onChanged.addListener((result, storageName) => {
 });
 
 function loadBadgeNotification() {
-  chrome.tabs.query(query, (tabs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     var isWebsiteFound = false;
-    currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+    var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
     console.log("[+] event.js website selected", currentWebsite);
     chrome.storage.local.get("websites", function (result) {
-      websites = result.websites;
+      var websites = result.websites;
       if (websites) {
         for (var websiteKey in websites) {
           //check if website records exists
