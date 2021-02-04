@@ -9,7 +9,7 @@ Usage:
 
 ![alt text](https://github.com/ohyicong/removeit-chrome-extension/blob/main/images/undo_element.png "Element removed from website")
 
-Socials
-Youtube: https://www.youtube.com/user/chirpieful
+
+Follow me on Youtube: https://www.youtube.com/user/chirpieful
 
 
