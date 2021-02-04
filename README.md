@@ -1,6 +1,6 @@
 # Removeit
 
->A Chrome extension that allows you to remove HTML elements from any website easily.
+>A Chrome extension that allows you to remove HTML elements (permanently) from any website easily.
 
 Usage:
 1. Select Element. ctrl + alt + hover 
