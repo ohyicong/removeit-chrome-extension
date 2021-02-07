@@ -56,6 +56,7 @@ chrome.storage.onChanged.addListener((result, storageName) => {
   });
 });
 function loadBadgeNotification() {
+  chrome.browserAction.setBadgeBackgroundColor({ color: "#007bff"});
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     var isWebsiteFound = false;
     var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
