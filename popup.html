@@ -12,12 +12,13 @@
       href="css/bootstrap.min.css"
     />
     <link rel="stylesheet" type="text/css" href="css/all.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap4-toggle.min.css" />
   </head>
   <body
     class="container p-0 bg-light"
     style="width: 250px; border-radius: 20px"
   >
-    <div class="container m-0 mt-1 p-1">
+    <div class="container m-0 mt-1 p-1 ">
       <div class="row">
         <div class="col-1">
           <i class="fa fa-globe ml-1" aria-hidden="true"></i>
@@ -31,6 +32,19 @@
           "
           id="currentWebsite"
         ></div>
+      </div>
+    </div>
+    <div class="container m-0 p-1">
+      <div class="container rounded pl-2 pr-2">
+        <div class="row">
+          <div class="col-8">
+            <p class="mb-0 text-left"><small>Apply to all pages:</small></h5>
+          </div>
+          <div class="col-4">
+            <input type="checkbox" checked data-toggle="toggle" data-onstyle="dark" data-offstyle="secondary" data-size="xs" data-width="55" id="isAppliedToAllPages">
+          </div>
+        </div>
+        
       </div>
     </div>
     <div class="container m-0 p-1">
@@ -53,5 +67,6 @@
   </body>
   <script src="js/all.js"></script>
   <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/bootstrap4-toggle.min.js"></script>
   <script src="popup.js"></script>
 </html>

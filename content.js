@@ -4,6 +4,7 @@ var removedElements = [];
 var websites = [];
 var isActivated = false;
 var isShown = false;
+var isAppliedToAllPages = true;
 
 //on mouseover, highlight element when ctrl+alt+mouseover
 $("body").mouseover(function (event) {
@@ -47,6 +48,7 @@ $("body").click(function (event) {
 //check chrome storage and delete all elements
 $(document).ready(function () {
   setTimeout(function () {
+    //wait for 1.5 seconds after DOM is loaded
     loadWebsite();
   }, 1000);
 });
@@ -71,6 +73,7 @@ function structureSelector(element) {
   );
 }
 
+//listen to message from popup.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action == "undo") {
     console.log("content.js undo clicked");
@@ -78,51 +81,83 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     undoElement();
     //save removed elements to storage
     setRemovedElementsToStorage();
+  } else if (request.action == "toggle") {
+    console.log("content.js toggle clicked");
+    showAllRemovedElements();
+    loadWebsite();
   }
 });
 
+//remove element and save changes to storage
 function setRemovedElementsToStorage() {
   //global variable: websites,removedElements
   var isWebsiteFound = false;
-  var currentWebsite = extractWebsiteFromLink(window.location.href);
-  console.log("[+] content.js website selected", currentWebsite);
-  if (currentWebsite == "") {
-    console.log("[-] content.js no website available");
-    return;
-  }
-  for (var websiteKey in websites) {
-    if (websites[websiteKey]["website"] == currentWebsite) {
-      websites[websiteKey]["removedElements"] = removedElements;
-      isWebsiteFound = true;
+  var currentWebsite = "";
+  chrome.storage.local.get("isAppliedToAllPages", (result) => {
+    //load isAppliedToAllPages status
+    isAppliedToAllPages = result.isAppliedToAllPages;
+    console.log(isAppliedToAllPages, result.isAppliedToAllPages);
+    if (isAppliedToAllPages != null) {
+      console.log(
+        "[+] content.js toggle button load result",
+        isAppliedToAllPages
+      );
+    } else {
+      //initialise toggle status if doesn't exists, default as true
+      chrome.storage.local.set({ isAppliedToAllPages: true });
+      document.getElementById("isAppliedToAllPages").checked = true;
+      console.log("[+] popup.js set toggle button to true");
     }
-  }
-  //if website not found, create new entry
-  if (!isWebsiteFound) {
-    //check number of saved websites
-    if (websites.length == 0) {
-      //initialisation
-      websites = [
-        {
+    //check if applied to all pages
+    if (isAppliedToAllPages) {
+      currentWebsite = extractWebsiteFromLink(window.location.href);
+    } else {
+      currentWebsite = window.location.href;
+    }
+    //return null, if not website found
+    if (currentWebsite == "") {
+      console.log("[-] content.js no website available");
+      return;
+    }
+    //find website from storage
+    for (var websiteKey in websites) {
+      if (websites[websiteKey]["website"] == currentWebsite) {
+        websites[websiteKey]["removedElements"] = removedElements;
+        isWebsiteFound = true;
+      }
+    }
+    //if website not found, create new entry
+    if (!isWebsiteFound) {
+      //check number of saved websites
+      if (websites.length == 0) {
+        console.log(
+          "[+] content.js initialise current web (apply to all pages)"
+        );
+        //initialisation of current website
+        websites = [
+          {
+            website: currentWebsite,
+            removedElements: removedElements,
+          },
+        ];
+      } else {
+        console.log("[+] content.js subsequent (apply to all pages)");
+        //subsequent entries
+        websites.push({
           website: currentWebsite,
           removedElements: removedElements,
-        },
-      ];
-    } else {
-      //subsequent entries
-      websites.push({
-        website: currentWebsite,
-        removedElements: removedElements,
-      });
+        });
+      }
     }
-  }
-  //save to chrome storage
-  chrome.storage.local.set({ websites: websites });
+    //save to chrome storage
+    chrome.storage.local.set({ websites: websites });
+  });
 }
 
 function removeElement(target) {
   //global variable removedElements
   //delete element
-  $(target).hide(1000);
+  $(target).hide(500);
   //add deleted element to the list
   removedElements.push(structureSelector(target));
 }
@@ -132,46 +167,79 @@ function undoElement() {
   //undo element
   if (removedElements.length > 0) {
     console.log(removedElements);
-    $(removedElements.pop()).show(1000);
+    $(removedElements.pop()).show(500);
   }
 }
 
+function showAllRemovedElements() {
+  //global variable removedElements
+  //undo element
+  console.log("showAllRemovedElements", removedElements);
+  while (removedElements.length > 0) {
+    console.log(removedElements);
+    $(removedElements.pop()).show(1000);
+  }
+}
 function loadWebsite() {
   //global variable removedElements
   //check chrome storage
-  chrome.storage.local.get("websites", function (result) {
-    websites = result.websites;
-    var currentWebsite = extractWebsiteFromLink(window.location.href);
-    console.log("[+] content.js website selected", currentWebsite);
-    if (currentWebsite == "") {
-      console.log("[-] content.js no website available");
-      return;
+  chrome.storage.local.get("isAppliedToAllPages", (result) => {
+    //load isAppliedToAllPages status
+    isAppliedToAllPages = result.isAppliedToAllPages;
+    console.log(isAppliedToAllPages, result.isAppliedToAllPages);
+    if (isAppliedToAllPages != null) {
+      console.log(
+        "[+] content.js toggle button load result",
+        isAppliedToAllPages
+      );
+    } else {
+      //initialise toggle status if doesn't exists, default as true
+      chrome.storage.local.set({ isAppliedToAllPages: true });
+      document.getElementById("isAppliedToAllPages").checked = true;
+      console.log("[+] popup.js set toggle button to true");
     }
-    if (websites) {
-      console.log(websites);
-      for (var websiteKey in websites) {
-        console.log(websites[websiteKey]["website"]);
-        //check if website records exists
-        if (websites[websiteKey]["website"] == currentWebsite) {
-          removedElements = websites[websiteKey]["removedElements"];
-          //remove elements
-          if (removedElements) {
-            for (var removedElementsKey in removedElements) {
-              $(removedElements[removedElementsKey]).hide(1000);
+    chrome.storage.local.get("websites", function (result) {
+      websites = result.websites;
+      var currentWebsite = "";
+      if (websites) {
+        console.log(websites);
+        for (var websiteKey in websites) {
+          console.log(websites[websiteKey]["website"]);
+          //check if it is applied to all pages
+          if (isAppliedToAllPages) {
+            currentWebsite = extractWebsiteFromLink(window.location.href);
+          } else {
+            currentWebsite = window.location.href;
+          }
+          if (currentWebsite == "") {
+            console.log("[-] content.js no website available");
+            return;
+          }
+          if (websites[websiteKey]["website"] == currentWebsite) {
+            console.log("website found");
+            isWebsiteFound = true;
+            removedElements = websites[websiteKey]["removedElements"];
+            numberOfRemovedElement = removedElements.length;
+            //remove elements
+            if (removedElements) {
+              for (var removedElementsKey in removedElements) {
+                $(removedElements[removedElementsKey]).hide(1000);
+              }
             }
           }
         }
+      } else {
+        websites = [];
+        console.log(websites);
       }
-    } else {
-      websites = [];
-      console.log(websites);
-    }
+    });
   });
 }
 
+//function to extract main website from link
 function extractWebsiteFromLink(link) {
   try {
-    return link.split("/")[2];
+    return `${link.split("/")[0]}//${link.split("/")[2]}/`;
   } catch (e) {
     console.log("[-] content.js exception occured: ", e);
     return "";
