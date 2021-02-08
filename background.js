@@ -18,11 +18,14 @@ chrome.storage.onChanged.addListener((result, storageName) => {
   loadBadgeNotification();
 });
 function loadBadgeNotification() {
+  var isAppliedToAllPages = "";
+  var isWebsiteFound = false;
+  var currentWebsite = "";
+  var websites = [];
   chrome.browserAction.setBadgeBackgroundColor({ color: "#23272b" });
   chrome.storage.local.get("isAppliedToAllPages", (result) => {
     //load isAppliedToAllPages status
     const isAppliedToAllPages = result.isAppliedToAllPages;
-    console.log(isAppliedToAllPages, result.isAppliedToAllPages);
     if (isAppliedToAllPages != null) {
       console.log(
         "[+] background.js toggle button load result",
@@ -34,44 +37,31 @@ function loadBadgeNotification() {
       document.getElementById("isAppliedToAllPages").checked = true;
       console.log("[+] background.js set toggle button to true");
     }
-
+    //get current tab url
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      var isWebsiteFound = false;
-      var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
-      var currentPage = tabs[0].url.toString();
-      console.log("[+] background.js website selected", currentWebsite);
+      isWebsiteFound = false;
+      currentWebsite = "";
+      if (isAppliedToAllPages) {
+        currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+      } else {
+        currentWebsite = tabs[0].url.toString();
+      }
+      //get removed element data from local storage
       chrome.storage.local.get("websites", function (result) {
-        var websites = result.websites;
+        websites = result.websites;
         if (websites) {
           for (var websiteKey in websites) {
-            //check if it is applied to all pages
-            if (isAppliedToAllPages) {
-              //check if website records exists
-              if (websites[websiteKey]["website"] == currentWebsite) {
-                isWebsiteFound = true;
-                removedElements = websites[websiteKey]["removedElements"];
-                numberOfRemovedElement = removedElements.length;
-                //remove elements
-                if (removedElements) {
-                  chrome.browserAction.setBadgeText({
-                    tabId: tabs[0].id,
-                    text: `${numberOfRemovedElement}`,
-                  });
-                }
-              }
-            } else {
-              //check if page records exists
-              if (websites[websiteKey]["website"] == currentPage) {
-                isWebsiteFound = true;
-                removedElements = websites[websiteKey]["removedElements"];
-                numberOfRemovedElement = removedElements.length;
-                //remove elements
-                if (removedElements) {
-                  chrome.browserAction.setBadgeText({
-                    tabId: tabs[0].id,
-                    text: `${numberOfRemovedElement}`,
-                  });
-                }
+            //check if website records exists
+            if (websites[websiteKey]["website"] == currentWebsite) {
+              isWebsiteFound = true;
+              removedElements = websites[websiteKey]["removedElements"];
+              numberOfRemovedElement = removedElements.length;
+              //remove elements
+              if (removedElements) {
+                chrome.browserAction.setBadgeText({
+                  tabId: tabs[0].id,
+                  text: `${numberOfRemovedElement}`,
+                });
               }
             }
           }

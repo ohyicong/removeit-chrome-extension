@@ -25,6 +25,7 @@ function extractWebsiteFromLink(link) {
 
 //load popup.html when initialised
 function loadPopup() {
+  var currentWebsite = "";
   //function to load information on popup.html
   chrome.storage.local.get("isAppliedToAllPages", (result) => {
     //load isAppliedToAllPages status
@@ -46,10 +47,11 @@ function loadPopup() {
     }
 
     chrome.tabs.query(query, (tabs) => {
-      var currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
-      var currentPage = tabs[0].url.toString();
-      console.log("[+] popup.js website selected", currentWebsite);
-      console.log("[+] popup.js page selected", currentPage);
+      if (isAppliedToAllPages) {
+        currentWebsite = extractWebsiteFromLink(tabs[0].url.toString());
+      } else {
+        currentWebsite = tabs[0].url.toString();
+      }
       $("#currentWebsite").text(currentWebsite.toLowerCase());
       if (currentWebsite == "") {
         console.log("[-] popup.js no website available");
@@ -62,28 +64,14 @@ function loadPopup() {
         websites = result.websites;
         if (websites) {
           for (var websiteKey in websites) {
-            //check if it is applied to all pages
-            if (isAppliedToAllPages) {
-              //check if website records exists
-              if (websites[websiteKey]["website"] == currentWebsite) {
-                isWebsiteFound = true;
-                removedElements = websites[websiteKey]["removedElements"];
-                numberOfRemovedElement = removedElements.length;
-                //remove elements
-                if (removedElements) {
-                  $("#numberRemovedElements").text(`${numberOfRemovedElement}`);
-                }
-              }
-            } else {
-              //check if page records exists
-              if (websites[websiteKey]["website"] == currentPage) {
-                isWebsiteFound = true;
-                removedElements = websites[websiteKey]["removedElements"];
-                numberOfRemovedElement = removedElements.length;
-                //remove elements
-                if (removedElements) {
-                  $("#numberRemovedElements").text(`${numberOfRemovedElement}`);
-                }
+            //check if website records exists
+            if (websites[websiteKey]["website"] == currentWebsite) {
+              isWebsiteFound = true;
+              removedElements = websites[websiteKey]["removedElements"];
+              numberOfRemovedElement = removedElements.length;
+              //remove elements
+              if (removedElements) {
+                $("#numberRemovedElements").text(`${numberOfRemovedElement}`);
               }
             }
           }

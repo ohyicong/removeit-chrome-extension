@@ -48,7 +48,7 @@ $("body").click(function (event) {
 //check chrome storage and delete all elements
 $(document).ready(function () {
   setTimeout(function () {
-    //wait for 1.5 seconds after DOM is loaded
+    //wait for 1 second after DOM is loaded
     loadWebsite();
   }, 1000);
 });
