@@ -1,6 +1,7 @@
 var numberOfRemovedElement = 0;
 var query = { active: true, currentWindow: true };
 var isAppliedToAllPages = true;
+
 //function to undo last removed item
 $("#undoButton").click(() => {
   console.log("[+] popup.js undo clicked");
@@ -88,6 +89,7 @@ function loadPopup() {
 $("#isAppliedToAllPages").change(() => {
   const isAppliedToAllPages = document.getElementById("isAppliedToAllPages")
     .checked;
+  document.getElementById("isAppliedToAllPages").disabled = true;
   console.log("[+] popup.js toggle clicked", isAppliedToAllPages);
   //save to chrome storage
   chrome.storage.local.set({ isAppliedToAllPages: isAppliedToAllPages }, () => {
@@ -99,6 +101,10 @@ $("#isAppliedToAllPages").change(() => {
       chrome.tabs.sendMessage(tabs[0].id, { action: "toggle" });
     });
   });
+  //set a timeout to prevent user from spamming the toggle button
+  setTimeout(() => {
+    document.getElementById("isAppliedToAllPages").disabled = false;
+  }, 1000);
 });
 
 loadPopup();

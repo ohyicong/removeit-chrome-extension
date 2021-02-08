@@ -177,7 +177,7 @@ function showAllRemovedElements() {
   console.log("showAllRemovedElements", removedElements);
   while (removedElements.length > 0) {
     console.log(removedElements);
-    $(removedElements.pop()).show(1000);
+    $(removedElements.pop()).show(500);
   }
 }
 function loadWebsite() {
@@ -223,7 +223,7 @@ function loadWebsite() {
             //remove elements
             if (removedElements) {
               for (var removedElementsKey in removedElements) {
-                $(removedElements[removedElementsKey]).hide(1000);
+                $(removedElements[removedElementsKey]).hide(500);
               }
             }
           }
