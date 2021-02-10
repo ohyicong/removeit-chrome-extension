@@ -49,23 +49,30 @@ function loadBadgeNotification() {
       //get removed element data from local storage
       chrome.storage.local.get("websites", function (result) {
         websites = result.websites;
-        if (websites) {
+        if (websites != [] && websites) {
           for (var websiteKey in websites) {
             //check if website records exists
             if (websites[websiteKey]["website"] == currentWebsite) {
               isWebsiteFound = true;
               removedElements = websites[websiteKey]["removedElements"];
               numberOfRemovedElement = removedElements.length;
-              //remove elements
+              //update notification
               if (removedElements) {
                 chrome.browserAction.setBadgeText({
                   tabId: tabs[0].id,
                   text: `${numberOfRemovedElement}`,
                 });
+              } else {
+                chrome.browserAction.setBadgeText({
+                  tabId: tabs[0].id,
+                  text: `0`,
+                });
               }
+              break;
             }
           }
         }
+        //if website not found, default to 0 element removed
         if (!isWebsiteFound) {
           chrome.browserAction.setBadgeText({
             tabId: tabs[0].id,

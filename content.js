@@ -45,14 +45,6 @@ $("body").click(function (event) {
   }
 });
 
-//check chrome storage and delete all elements
-$(document).ready(function () {
-  setTimeout(function () {
-    //wait for 1 second after DOM is loaded
-    loadWebsite();
-  }, 1000);
-});
-
 //create xpath for deleted element
 function structureSelector(element) {
   var tagName = element.tagName.toLowerCase();
@@ -96,7 +88,6 @@ function setRemovedElementsToStorage() {
   chrome.storage.local.get("isAppliedToAllPages", (result) => {
     //load isAppliedToAllPages status
     isAppliedToAllPages = result.isAppliedToAllPages;
-    console.log(isAppliedToAllPages, result.isAppliedToAllPages);
     if (isAppliedToAllPages != null) {
       console.log(
         "[+] content.js toggle button load result",
@@ -154,6 +145,7 @@ function setRemovedElementsToStorage() {
   });
 }
 
+//remove element from content page
 function removeElement(target) {
   //global variable removedElements
   //delete element
@@ -162,31 +154,31 @@ function removeElement(target) {
   removedElements.push(structureSelector(target));
 }
 
+//unhide removed element from content page
 function undoElement() {
   //global variable removedElements
   //undo element
   if (removedElements.length > 0) {
-    console.log(removedElements);
     $(removedElements.pop()).show(500);
   }
 }
 
+//unhide all elements from content page
 function showAllRemovedElements() {
   //global variable removedElements
   //undo element
-  console.log("showAllRemovedElements", removedElements);
   while (removedElements.length > 0) {
-    console.log(removedElements);
     $(removedElements.pop()).show(500);
   }
 }
+
+//retrieve data from storage and remove all elements
 function loadWebsite() {
   //global variable removedElements
   //check chrome storage
   chrome.storage.local.get("isAppliedToAllPages", (result) => {
     //load isAppliedToAllPages status
     isAppliedToAllPages = result.isAppliedToAllPages;
-    console.log(isAppliedToAllPages, result.isAppliedToAllPages);
     if (isAppliedToAllPages != null) {
       console.log(
         "[+] content.js toggle button load result",
@@ -196,13 +188,13 @@ function loadWebsite() {
       //initialise toggle status if doesn't exists, default as true
       chrome.storage.local.set({ isAppliedToAllPages: true });
       document.getElementById("isAppliedToAllPages").checked = true;
-      console.log("[+] popup.js set toggle button to true");
+      console.log("[+] content.js set toggle button to true");
     }
+
     chrome.storage.local.get("websites", function (result) {
       websites = result.websites;
       var currentWebsite = "";
-      if (websites) {
-        console.log(websites);
+      if (websites != [] && websites) {
         for (var websiteKey in websites) {
           console.log(websites[websiteKey]["website"]);
           //check if it is applied to all pages
@@ -216,7 +208,7 @@ function loadWebsite() {
             return;
           }
           if (websites[websiteKey]["website"] == currentWebsite) {
-            console.log("website found");
+            console.log("[-] content.js website found");
             isWebsiteFound = true;
             removedElements = websites[websiteKey]["removedElements"];
             numberOfRemovedElement = removedElements.length;
@@ -225,12 +217,17 @@ function loadWebsite() {
               for (var removedElementsKey in removedElements) {
                 $(removedElements[removedElementsKey]).hide(500);
               }
+            } else {
+              chrome.browserAction.setBadgeText({
+                tabId: tabs[0].id,
+                text: `0`,
+              });
             }
+            break;
           }
         }
       } else {
         websites = [];
-        console.log(websites);
       }
     });
   });
@@ -245,3 +242,11 @@ function extractWebsiteFromLink(link) {
     return "";
   }
 }
+
+//on document ready, load website
+$(document).ready(function () {
+  setTimeout(function () {
+    //wait for 1 second after DOM is loaded
+    loadWebsite();
+  }, 1000);
+});

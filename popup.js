@@ -19,7 +19,7 @@ function extractWebsiteFromLink(link) {
   try {
     return `${link.split("/")[0]}//${link.split("/")[2]}/`;
   } catch (e) {
-    console.log("[-] content.js exception occured: ", e);
+    console.log("[-] popup.js exception occured: ", e);
     return "";
   }
 }
@@ -63,7 +63,7 @@ function loadPopup() {
         //global variable: websites
         var isWebsiteFound = false;
         websites = result.websites;
-        if (websites) {
+        if (websites != [] && websites) {
           for (var websiteKey in websites) {
             //check if website records exists
             if (websites[websiteKey]["website"] == currentWebsite) {
@@ -73,10 +73,14 @@ function loadPopup() {
               //remove elements
               if (removedElements) {
                 $("#numberRemovedElements").text(`${numberOfRemovedElement}`);
+              } else {
+                $("#numberRemovedElements").text(`0`);
               }
+              break;
             }
           }
         }
+        //if no website found, default to 0 element removed
         if (!isWebsiteFound) {
           $("#numberRemovedElements").text("0");
         }
@@ -107,4 +111,7 @@ $("#isAppliedToAllPages").change(() => {
   }, 1000);
 });
 
-loadPopup();
+//on document ready, load popup
+$(document).ready(function () {
+  loadPopup();
+});
