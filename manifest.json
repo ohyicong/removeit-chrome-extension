@@ -16,5 +16,5 @@
       "js": ["js/jquery-3.5.1.min.js", "js/jquery-ui.min.js", "content.js"]
     }
   ],
-  "permissions": ["storage", "tabs", "activeTab", "webNavigation"]
+  "permissions": ["storage", "tabs", "webNavigation"]
 }
