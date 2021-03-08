@@ -196,7 +196,6 @@ function loadWebsite() {
       var currentWebsite = "";
       if (websites != [] && websites) {
         for (var websiteKey in websites) {
-          console.log(websites[websiteKey]["website"]);
           //check if it is applied to all pages
           if (isAppliedToAllPages) {
             currentWebsite = extractWebsiteFromLink(window.location.href);
@@ -245,7 +244,7 @@ function extractWebsiteFromLink(link) {
 
 //on document ready, load website
 $(document).ready(function () {
-  setTimeout(function () {
+  setInterval(function () {
     //wait for 1 second after DOM is loaded
     loadWebsite();
   }, 1000);
